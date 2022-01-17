@@ -1,0 +1,157 @@
+﻿@page "/"
+
+@inject IDatabaseRepository repositroy
+@inject IInvoiceRepository repository
+
+@inject IWebHostEnvironment env
+
+@using System.Text.RegularExpressions
+@using CsvHelper;
+@using System.IO
+@using System.Xml.Serialization
+
+
+
+<form>
+    <div class="row justify-content-md-center mb-5">
+        <div class="col-auto">
+            <h3>Upload your invoice!</h3>
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-auto d-flex align-items-center">
+            <InputFile OnChange="HandleSelection"
+                       accept=".csv,.xml" />
+            <button type="submit" class="btn btn-primary" @onclick="@UploadInvoice">Submit</button>
+        </div>
+    </div>
+    <div class="row justify-content-md-center mb-5">
+        <div class="col-auto">
+            <button class="btn btn-lg btn-primary"
+                    @onclick="@CreateDatabase">
+                Create
+            </button>
+        </div>
+        <div class="col-auto" hidden=@string.IsNullOrEmpty(errorMessage)>
+            <p class="mt-4 text-danger">@errorMessage</p>
+        </div>
+    </div>
+</form>
+@code {
+    public string errorMessage { get; set; }
+    public string Message { get; set; }
+
+    public async Task CreateDatabase()
+    {
+        errorMessage = string.Empty;
+        try
+        {
+            await repositroy.Create("invoice");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+
+    private IBrowserFile selectedFile { get; set; }
+    private Stream stream { get; set; }
+    private string filePath { get; set; }
+    private FileStream fileStream { get; set; }
+
+    private long maxFileSize = 1048576; // set max file upload size in bytes
+    private Regex regexCSV = new Regex(".+\\.csv", RegexOptions.Compiled); // check file is CSV
+    private Regex regexXML = new Regex(".+\\.xml", RegexOptions.Compiled); // check file is XML
+
+    public List<Raw> invoiceList { get; set; }
+
+    public void HandleSelection(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+
+        if (selectedFile.Size <= maxFileSize) // check file size is less than 1MB
+        {
+            if (!regexCSV.IsMatch(selectedFile.Name) && !regexXML.IsMatch(selectedFile.Name)) // check file type is csv or xml with Regular Expression
+            {
+                errorMessage = "Please choose the correct file!";
+            }
+        }
+        else
+        {
+            errorMessage = "Please upload the file which is less than 1MB!";
+        }
+    }
+
+    #region Upload Invoice Function
+    public async Task UploadInvoice()
+    {
+        Stream stream = selectedFile.OpenReadStream();
+        filePath = $"{env.WebRootPath}\\{selectedFile.Name}";
+        FileStream fileStream = File.Create(filePath);
+        await stream.CopyToAsync(fileStream);
+        stream.Close();
+        fileStream.Close();
+
+        if (regexCSV.IsMatch(selectedFile.Name))
+        {
+            await ReadCSV();
+        }
+        else
+        {
+            await ReadXML();
+        }
+
+        filePath = string.Empty;
+    }
+    #region CSV Read Function
+    private async Task ReadCSV()
+    {
+        StreamReader streamReader = new StreamReader(filePath);
+        CsvReader csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
+
+        try {
+            invoiceList = csvReader.GetRecords<Raw>().ToList();
+            await repository.UploadInvoices(invoiceList);
+            invoiceList.Clear();
+        }
+        catch (Exception e) {
+            errorMessage = "Invalid file!";
+        }
+    }
+    #endregion
+    #region XML Read Function
+    private async Task ReadXML()
+    {
+        ForXml data = new ForXml();
+
+        var XmlSerializer = new XmlSerializer(typeof(ForXml));
+
+        try
+        {
+            var reader2 = new StreamReader(filePath);
+            data = (ForXml)XmlSerializer.Deserialize(reader2);
+
+            invoiceList = new List<Raw>();
+
+            foreach (var i in data.Transcations)
+            {
+                Raw invoice = new Raw
+                {
+                    TransactionID = i.ID,
+                    Amount = i.PaymentDetails.Amount,
+                    CurrencyCode = i.PaymentDetails.CurrencyCode,
+                    TransactionDate = i.TransactionDate,
+                    Status = i.Status
+                };
+                invoiceList.Add(invoice);
+            }
+            await repository.UploadInvoices(invoiceList);
+            invoiceList.Clear();
+        }
+        catch (Exception e) {
+            errorMessage = "Invalid file!";
+        }
+    }
+    #endregion
+    #endregion
+}

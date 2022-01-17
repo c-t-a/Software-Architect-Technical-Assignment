@@ -1,0 +1,6 @@
+﻿id,amount,currency_code,transaction_date,status
+Invoice001,100,USD,2012-01-12 12:01,Done
+Invoice002,101,USD,2012-01-13 12:01,Done
+Invoice003,102,USD,2012-01-14 12:01,Done
+Invoice004,103,USD,2012-01-15 12:01,Done
+Invoice005,104,USD,2012-01-16 12:01,Done

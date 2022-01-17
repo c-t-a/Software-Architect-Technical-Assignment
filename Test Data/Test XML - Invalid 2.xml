@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Transcations>
+  <Transaction id="Invoice001">
+    <PaymentDetails>
+      <Amount>200.00</Amount>
+      <CurrencyCode>USD</CurrencyCode>
+    </PaymentDetails>
+    <TranscationDate>2022-01-17T18:49:05.3793377+06:30</TranscationDate>
+    <Status>Done</Status>
+  </Transaction>
+  <Transaction id="Invoice002">
+    <PaymentDetails>
+      <Amount></Amount>
+      <CurrencyCode>USD</CurrencyCode>
+    </PaymentDetails>
+    <TranscationDate>2022-01-17T18:49:05.3793377+06:30</TranscationDate>
+    <Status>Approved</Status>
+  </Transaction>
+  <Test>
+    <Data1>Testing 1</Data1>
+    <Data2>Testing 1</Data2>
+    <Data3>Testing 1</Data3>
+  </Test>
+ <Transaction id="Invoice003">
+    <PaymentDetails>
+      <CurrencyCode>USD</CurrencyCode>
+    </PaymentDetails>
+    <TranscationDate>2022-01-17T18:49:05.3793377+06:30</TranscationDate>
+  </Transaction>
+</Transcations>

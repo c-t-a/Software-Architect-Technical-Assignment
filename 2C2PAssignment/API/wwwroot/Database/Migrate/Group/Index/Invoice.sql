@@ -1,0 +1,2 @@
+ALTER TABLE Invoice
+    ADD CONSTRAINT Invoice_PK PRIMARY KEY (Transaction_ID);
