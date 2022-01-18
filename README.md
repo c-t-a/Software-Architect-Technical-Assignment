@@ -16,6 +16,6 @@ In the `Test Data` folder, there had some file that you can test for this assign
 API URL
 -----------
 
-To get all the invoices list, please used `/api/invoices`
-To get all the invoices info by currecny code, please used `/api/currecy/{your currency code}`
-To get all the invoices list by status, please used `/api/status/{your status}`
+To get all the invoices list, please used `/api/invoices`<br>
+To get all the invoices info by currecny code, please used `/api/currecy/{your currency code}`br>
+To get all the invoices list by status, please used `/api/status/{your status}`br>
