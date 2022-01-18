@@ -94,8 +94,11 @@ namespace Web.Services
                         throw;
                     }
                 }
-
                 throw new Exception("An error occured. Please try again.");
+            }
+            else
+            {
+                Invoice.repsondCode = response.StatusCode.ToString();
             }
         }
     }

@@ -29,6 +29,7 @@ namespace Model
 
         public static string fileName;
         public static string filePath;
+        public static string repsondCode = string.Empty;
 
         //private string test;
         //public int t = 3;

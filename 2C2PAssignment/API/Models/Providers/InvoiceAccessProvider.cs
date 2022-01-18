@@ -57,10 +57,9 @@ namespace API.Models.Providers
                     };
                     invoices.Add(inovice);
                 }
+                Task.Delay(500);
                 appDBContext.DbContext.Invoices.AddRange(invoices);
                 appDBContext.DbContext.SaveChanges();
-
-                //appDBContext.DbContext.Database.CommitTransaction();
             }
             catch (Exception e) {
                 appDBContext.DbContext.Database.RollbackTransaction();

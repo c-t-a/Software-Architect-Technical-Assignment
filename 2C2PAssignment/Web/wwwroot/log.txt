@@ -1,2 +1,4 @@
 valide-xml.xml,OK
+valide-xml.xml,OK
 New Microsoft Excel Worksheet.csv,OK
+valide-xml.xml,OK
