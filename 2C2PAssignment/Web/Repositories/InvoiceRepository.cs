@@ -17,7 +17,7 @@ namespace Web.Repositories
             this.restService = restService;
         }
 
-        public async Task UploadInvoices(List<Rawarr> invoices)
+        public async Task UploadInvoices(List<Invoice> invoices)
         {
             JArray invoicseArray = new JArray();
             foreach (var invoice in invoices)

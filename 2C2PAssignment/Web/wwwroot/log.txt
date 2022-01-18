@@ -1,0 +1,3 @@
+valide-xml.xml,BadRequest
+New Microsoft Excel Worksheet.csv,BadRequest
+Test XML - Valid.xml,BadRequest

@@ -27,6 +27,8 @@
         while (!string.IsNullOrEmpty(line = reader.ReadLine())) {
             logFile.Add(line);
         }
+        reader.Close();
+        fs.Close();
 
     }
 }

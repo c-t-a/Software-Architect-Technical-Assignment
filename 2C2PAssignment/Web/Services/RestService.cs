@@ -45,8 +45,8 @@ namespace Web.Services
         }
         private async Task HandleResponse(HttpResponseMessage response)
         {
-            string fileName = Rawarr.fileName;
-            string filePath = $"{Rawarr.filePath}\\log.txt";
+            string fileName = Invoice.fileName;
+            string filePath = $"{Invoice.filePath}\\log.txt";
 
             // wirte log file
             try
