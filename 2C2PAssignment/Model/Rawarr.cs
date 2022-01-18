@@ -9,29 +9,26 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    public class Raw
+    public class Rawarr
     {
+        public Rawarr(){}
         [Name("id")]
-        [Required]
         public string TransactionID { get; set; }
 
         [Name("amount")]
-        [Required]
         public decimal Amount { get; set; }
 
         [Name("currency_code")]
-        [Required]
         public string CurrencyCode { get; set; }
 
         [Name("transaction_date")]
-        [Required]
-        public DateTime TransactionDate { 
-            get;
-            set; }
+        public DateTime TransactionDate { get; set; }
 
         [Name("status")]
-        [Required]
         public string Status { get; set; }
+
+        public static string fileName;
+        public static string filePath;
 
         //private string test;
         //public int t = 3;

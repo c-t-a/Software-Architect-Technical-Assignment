@@ -17,7 +17,7 @@ namespace Web.Repositories
             this.restService = restService;
         }
 
-        public async Task UploadInvoices(List<Raw> invoices)
+        public async Task UploadInvoices(List<Rawarr> invoices)
         {
             JArray invoicseArray = new JArray();
             foreach (var invoice in invoices)
@@ -32,9 +32,9 @@ namespace Web.Repositories
                 });
             }
 
-            JObject test = new JObject { { "invoice", invoicseArray } };
+            JObject data = new JObject { { "invoice", invoicseArray } };
 
-            await restService.PostAsync(Constants.RestInvoiceUpload, test);
+            await restService.PostAsync(Constants.RestInvoiceUpload, data);
         }
     }
 }

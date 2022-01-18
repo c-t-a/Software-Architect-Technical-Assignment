@@ -1,6 +1,5 @@
 ﻿using API.Models.Entities;
 using API.Models.Services;
-using Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -18,9 +17,9 @@ namespace API.Models.Providers
             this.appDBContext = appDBContext;
         }
 
-        public List<Invoice> GetInvoices() 
+        public List<InvoiceEntity> GetInvoices() 
         {
-            List<Invoice> invoices = appDBContext.DbContext.Invoices.ToList();
+            List<InvoiceEntity> invoices = appDBContext.DbContext.Invoices.ToList();
             return invoices;
         }
 
@@ -29,7 +28,7 @@ namespace API.Models.Providers
             try
             {
                 var invoicesArray = (JArray)data["invoice"];
-                List<Invoice> invoices = new List<Invoice>();
+                List<Entities.InvoiceEntity> invoices = new List<Entities.InvoiceEntity>();
                 string status;
                 char strToChar;
                 foreach (var item in invoicesArray) {
@@ -49,7 +48,7 @@ namespace API.Models.Providers
                     else {
                         strToChar = 'I';
                     }
-                    Invoice inovice = new Invoice { 
+                    InvoiceEntity inovice = new InvoiceEntity { 
                         TransactionID = (string)item["transaction_id"],
                         Amount = (decimal)item["amount"],
                         CurrencyCode = (string)item["currency_code"],

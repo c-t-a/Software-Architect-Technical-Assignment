@@ -8,17 +8,21 @@ using System.Xml.Serialization;
 
 namespace Model
 {
-    [Serializable]
-    [XmlRoot(ElementName = "Transcations", IsNullable = false)]
+    [XmlRoot(ElementName = "Transcations")]
     public class ForXml
     {
-        public ForXml() {
-
+        public ForXml()
+        {
+            Transcations = new List<Transcation>();
         }
 
         [XmlElement(ElementName = "Transaction", IsNullable = false)]
         public List<Transcation> Transcations { get; set; }
 
+        public Transcation this[string id]
+        {
+            get { return Transcations.FirstOrDefault(s => string.Equals(s.ID, id, StringComparison.OrdinalIgnoreCase)); }
+        }
     }
 
     public class Transcation

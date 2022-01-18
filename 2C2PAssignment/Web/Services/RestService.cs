@@ -4,11 +4,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Hosting;
 
 namespace Web.Services
 {
@@ -42,6 +45,33 @@ namespace Web.Services
         }
         private async Task HandleResponse(HttpResponseMessage response)
         {
+            string fileName = Rawarr.fileName;
+            string filePath = $"{Rawarr.filePath}\\log.txt";
+
+            // wirte log file
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    //FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Write);
+                    StreamWriter writer = new StreamWriter(filePath,append:true);
+                    writer.WriteLine($"{fileName},{response.StatusCode}");
+                    writer.Close();
+                    //fs.Close();
+                }
+                else {
+                    FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+                    StreamWriter writer = new StreamWriter(fs);
+                    writer.WriteLine($"{fileName},{response.StatusCode}{Environment.NewLine}");
+                    writer.Close();
+                    fs.Close();
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 HttpStatusCode statusCode = response.StatusCode;

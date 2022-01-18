@@ -10,20 +10,33 @@
 @using System.IO
 @using System.Xml.Serialization
 
-
-
 <form>
     <div class="row justify-content-md-center mb-5">
         <div class="col-auto">
             <h3>Upload your invoice!</h3>
         </div>
     </div>
-    <div class="row justify-content-md-center">
+    <div class="row justify-content-md-center align-items-center">
         <div class="col-auto d-flex align-items-center">
             <InputFile OnChange="HandleSelection"
                        accept=".csv,.xml" />
-            <button type="submit" class="btn btn-primary" @onclick="@UploadInvoice">Submit</button>
         </div>
+        @{
+            if (isLoading == true) { 
+                <div class=" row">
+                    <div class="col-auto">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                </div>
+            }else{
+                <div class="row">
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary" @onclick="@UploadInvoice" disabled="@noUpload">Submit</button>
+                    </div>
+                </div>
+            }
+        }
+        
     </div>
     <div class="row justify-content-md-center mb-5">
         <div class="col-auto">
@@ -37,7 +50,10 @@
         </div>
     </div>
 </form>
+
 @code {
+    private bool isLoading { get; set; } = false;
+    private bool noUpload { get; set; } = true;
     public string errorMessage { get; set; }
     public string Message { get; set; }
 
@@ -60,20 +76,90 @@
     private FileStream fileStream { get; set; }
 
     private long maxFileSize = 1048576; // set max file upload size in bytes
+    private long TotalBytes;
+    private long UploadedBytes;
+
     private Regex regexCSV = new Regex(".+\\.csv", RegexOptions.Compiled); // check file is CSV
     private Regex regexXML = new Regex(".+\\.xml", RegexOptions.Compiled); // check file is XML
 
-    public List<Raw> invoiceList { get; set; }
+    public List<Rawarr> invoiceList { get; set; }
 
-    public void HandleSelection(InputFileChangeEventArgs e)
+    protected async Task HandleSelection(InputFileChangeEventArgs e)
     {
-        selectedFile = e.File;
-
-        if (selectedFile.Size <= maxFileSize) // check file size is less than 1MB
+        if (e.File.Size <= maxFileSize) // check file size is less than 1MB
         {
-            if (!regexCSV.IsMatch(selectedFile.Name) && !regexXML.IsMatch(selectedFile.Name)) // check file type is csv or xml with Regular Expression
+            if (!regexCSV.IsMatch(e.File.Name) && !regexXML.IsMatch(e.File.Name)) // check file type is csv or xml with Regular Expression
             {
                 errorMessage = "Please choose the correct file!";
+            }
+            else
+            {
+                isLoading = true;
+                filePath = $"{env.WebRootPath}\\{e.File.Name}";
+                Rawarr.fileName = e.File.Name;
+                Rawarr.filePath = env.WebRootPath;
+                selectedFile = e.File;
+
+                UploadedBytes = 0;
+
+                // Disable the file input field
+                //UploadingLargeFile = true;
+                await InvokeAsync(StateHasChanged);
+
+                // calculate the chunks we have to send
+                TotalBytes = selectedFile.Size;
+                long percent = 0;
+                long chunkSize = 400000; // fairly arbitrary
+                long numChunks = TotalBytes / chunkSize;
+                long remainder = TotalBytes % chunkSize;
+
+                // get new filename with a bit of entropy
+
+                if (File.Exists(filePath)) // delete the file if already exist
+                {
+                    File.Delete(filePath);
+                }
+
+                // Open the input and output file streams
+                using (var inStream = selectedFile.OpenReadStream(long.MaxValue))
+                {
+                    using (var outStream = File.OpenWrite(filePath))
+                    {
+                        System.Threading.Thread.Sleep(3000);
+                        // Read and Write
+
+                        for (int i = 0; i < numChunks; i++)
+                        {
+                            // Read the next chunk
+                            var buffer = new byte[chunkSize];
+                            await inStream.ReadAsync(buffer, 0, buffer.Length);
+                            // Write it
+                            await outStream.WriteAsync(buffer, 0, buffer.Length);
+                            // Update our progress data and UI
+                            UploadedBytes += chunkSize;
+                            percent = UploadedBytes * 100 / TotalBytes;
+                            // Report progress with a string
+                            //LargeUploadMessage = $"Uploading {args.File.Name} {percent}%";
+                            await InvokeAsync(StateHasChanged);
+                        }
+
+                        if (remainder > 0)
+                        {
+                            // Same stuff as above, just with the leftover chunk data
+                            var buffer = new byte[remainder];
+                            System.Threading.Thread.Sleep(500);
+                            await inStream.ReadAsync(buffer, 0, buffer.Length);
+                            System.Threading.Thread.Sleep(500);
+                            await outStream.WriteAsync(buffer, 0, buffer.Length);
+                            UploadedBytes += remainder;
+                            percent = UploadedBytes * 100 / TotalBytes;
+                            //LargeUploadMessage = $"Uploading {args.File.Name} {percent}%";
+                            await InvokeAsync(StateHasChanged);
+                        }
+                    }
+                }
+                isLoading = false;
+                noUpload = false;
             }
         }
         else
@@ -85,13 +171,6 @@
     #region Upload Invoice Function
     public async Task UploadInvoice()
     {
-        Stream stream = selectedFile.OpenReadStream();
-        filePath = $"{env.WebRootPath}\\{selectedFile.Name}";
-        FileStream fileStream = File.Create(filePath);
-        await stream.CopyToAsync(fileStream);
-        stream.Close();
-        fileStream.Close();
-
         if (regexCSV.IsMatch(selectedFile.Name))
         {
             await ReadCSV();
@@ -101,21 +180,30 @@
             await ReadXML();
         }
 
+        if (File.Exists(filePath)) // delete the file after upload
+        {
+            File.Delete(filePath);
+        }
         filePath = string.Empty;
+        noUpload = false;
     }
     #region CSV Read Function
     private async Task ReadCSV()
     {
-        StreamReader streamReader = new StreamReader(filePath);
-        CsvReader csvReader = new CsvReader(streamReader, CultureInfo.InvariantCulture);
-
-        try {
-            invoiceList = csvReader.GetRecords<Raw>().ToList();
+        try
+        {
+            using (var reader = new StreamReader(filePath))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                //csv.Context.RegisterClassMap<Raw>();
+                invoiceList = csv.GetRecords<Rawarr>().ToList();
+            }
             await repository.UploadInvoices(invoiceList);
             invoiceList.Clear();
         }
-        catch (Exception e) {
-            errorMessage = "Invalid file!";
+        catch (Exception e)
+        {
+            errorMessage = $"Invalid file! {e}";
         }
     }
     #endregion
@@ -128,14 +216,14 @@
 
         try
         {
-            var reader2 = new StreamReader(filePath);
-            data = (ForXml)XmlSerializer.Deserialize(reader2);
+            var reader = new StreamReader(filePath);
+            data = (ForXml)XmlSerializer.Deserialize(reader);
 
-            invoiceList = new List<Raw>();
+            invoiceList = new List<Rawarr>();
 
             foreach (var i in data.Transcations)
             {
-                Raw invoice = new Raw
+                Rawarr invoice = new Rawarr
                 {
                     TransactionID = i.ID,
                     Amount = i.PaymentDetails.Amount,
@@ -148,8 +236,9 @@
             await repository.UploadInvoices(invoiceList);
             invoiceList.Clear();
         }
-        catch (Exception e) {
-            errorMessage = "Invalid file!";
+        catch (Exception e)
+        {
+            errorMessage = $"Invalid file! {e}";
         }
     }
     #endregion

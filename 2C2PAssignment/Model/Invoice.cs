@@ -7,7 +7,7 @@ using CsvHelper.Configuration.Attributes;
 namespace Model
 {
     [Table("invoice")]
-    public class Invoice
+    public class InvoiceEntity
     {
         [Key]
         [Column("transaction_id")]

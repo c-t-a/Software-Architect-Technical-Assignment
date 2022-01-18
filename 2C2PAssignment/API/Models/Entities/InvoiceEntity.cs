@@ -8,17 +8,17 @@ namespace API.Models.Entities
     public class InvoiceEntity
     {
         [Key]
-        //[Required]
-        //[MaxLength(50)]
+        [Required]
+        [MaxLength(50)]
         public string TransactionID { get; set; }
-        //[Required]
+        [Required]
         public decimal Amount { get; set; }
-        //[Required]
-        //[StringLength(3, MinimumLength = 3)]
+        [Required]
+        [StringLength(3, MinimumLength = 3)]
         public string CurrencyCode { get; set; }
-        //[Required]
+        [Required]
         public DateTime TransactionDate { get; set; }
-        //[Required]
+        [Required]
         public char Status { get; set; }
 
         public override string ToString()
@@ -26,14 +26,14 @@ namespace API.Models.Entities
             return JsonConvert.SerializeObject(this);
         }
 
-        public Invoice toInvoiceModel() {
-            return new Invoice {
-                TransactionID = TransactionID,
-                Amount = Amount,
-                CurrencyCode = CurrencyCode,
-                TransactionDate = TransactionDate,
-                Status = Status
-            };
-        }
+        //public Invoice toInvoiceModel() {
+        //    return new Invoice {
+        //        TransactionID = TransactionID,
+        //        Amount = Amount,
+        //        CurrencyCode = CurrencyCode,
+        //        TransactionDate = TransactionDate,
+        //        Status = Status
+        //    };
+        //}
     }
 }

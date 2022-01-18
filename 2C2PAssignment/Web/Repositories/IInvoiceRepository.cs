@@ -9,6 +9,6 @@ namespace Web.Repositories
 {
     public interface IInvoiceRepository
     {
-        Task UploadInvoices(List<Raw> invoices);
+        Task UploadInvoices(List<Rawarr> invoices);
     }
 }

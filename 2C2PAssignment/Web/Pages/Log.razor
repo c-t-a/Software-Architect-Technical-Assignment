@@ -1,0 +1,32 @@
+﻿@page "/log"
+
+@inject IWebHostEnvironment env
+
+<h3>Log</h3>
+@{ 
+    if (logFile.Count > 0)
+    {
+        foreach(var data in logFile){ 
+            <p>@data</p>
+        }
+    }
+    else {
+        <p>Three is no log.</p>
+    }
+}
+
+@code {
+    public List<string> logFile = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string filePath = env.WebRootPath + "\\log.txt";
+        FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        StreamReader reader = new StreamReader(fs);
+        string line;
+        while (!string.IsNullOrEmpty(line = reader.ReadLine())) {
+            logFile.Add(line);
+        }
+
+    }
+}
