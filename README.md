@@ -12,3 +12,8 @@ line 11 "ServerConnection": "Server=localhost;Port=5432;;User Id=(your user id);
 ```
 
 In the `Test Data` folder, there had some file that you can test for this assignment.
+
+API URL
+-----------
+
+To get all the invoices list, please used `/api/invoices`
