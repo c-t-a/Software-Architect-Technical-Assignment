@@ -62,7 +62,7 @@ namespace Web.Services
                 else {
                     FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
                     StreamWriter writer = new StreamWriter(fs);
-                    writer.WriteLine($"{fileName},{response.StatusCode}{Environment.NewLine}");
+                    writer.WriteLine($"{fileName},{response.StatusCode}");
                     writer.Close();
                     fs.Close();
                 }

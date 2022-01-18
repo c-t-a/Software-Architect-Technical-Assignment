@@ -50,7 +50,7 @@
                         </div>
                 }
                 else {
-                    if (!string.IsNullOrEmpty(Message)) { 
+                    if (!string.IsNullOrEmpty(Message)) {
                         <div>
                             <p class="mt-4 text-success">@Message</p>
                         </div>
@@ -197,9 +197,10 @@
 
         try
         {
-            if (File.Exists(filePath)) // delete the file after upload
+            string delFile = env.WebRootPath + $"\\{selectedFile.Name}";
+            if (File.Exists(delFile)) // delete the file after upload
             {
-                File.Delete(filePath);
+                File.Delete(delFile);
             }
             if (!string.IsNullOrEmpty(Invoice.repsondCode))
             {
@@ -231,6 +232,7 @@
         catch (Exception e)
         {
             errorMessage = $"Invalid file! {e}";
+            createLog();
         }
     }
     #endregion
@@ -267,8 +269,27 @@
         catch (Exception e)
         {
             errorMessage = $"Invalid file! {e}";
+            createLog();
         }
     }
     #endregion
     #endregion
+    public void createLog()
+    {
+        string logPath = $"{env.WebRootPath}\\log.txt";
+        if (File.Exists(logPath))
+        {
+            StreamWriter writer = new StreamWriter(logPath, append: true);
+            writer.WriteLine($"{selectedFile.Name} is invalid");
+            writer.Close();
+        }
+        else
+        {
+            FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+            StreamWriter writer = new StreamWriter(fs);
+            writer.WriteLine($"{selectedFile.Name} is invalid");
+            writer.Close();
+            fs.Close();
+        }
+    }
 }
