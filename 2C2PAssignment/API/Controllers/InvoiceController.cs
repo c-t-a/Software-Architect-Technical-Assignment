@@ -47,5 +47,33 @@ namespace API.Controllers
                 return ResultBadRequest(e.Message);
             }
         }
+
+        [HttpGet("status/{status}")]
+        public IActionResult GetInvoicesByStatus(char status)
+        {
+            try
+            {
+                var invoices = invoiceAccessProvider.GetInvoicesByStatus(status);
+                return Ok(invoices);
+            }
+            catch (Exception e)
+            {
+                return ResultBadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("currency/{cCode}")]
+        public IActionResult GetInvoicesByCurrencyCode(string cCode)
+        {
+            try
+            {
+                var invoices = invoiceAccessProvider.GetInvoicesByCurrencyCode(cCode);
+                return Ok(invoices);
+            }
+            catch (Exception e)
+            {
+                return ResultBadRequest(e.Message);
+            }
+        }
     }
 }

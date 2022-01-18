@@ -66,5 +66,17 @@ namespace API.Models.Providers
                 throw new Exception(e.Message);
             }
         }
+
+        public List<InvoiceEntity> GetInvoicesByStatus(char status)
+        {
+            List<InvoiceEntity> invoices = appDBContext.DbContext.Invoices.Where(item => item.Status == status).ToList();
+            return invoices;
+        }
+
+        public List<InvoiceEntity> GetInvoicesByCurrencyCode(string cCode)
+        {
+            List<InvoiceEntity> invoices = appDBContext.DbContext.Invoices.Where(item => item.CurrencyCode == cCode).ToList();
+            return invoices;
+        }
     }
 }

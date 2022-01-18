@@ -9,5 +9,7 @@ namespace API.Models.Providers
     {
         List<InvoiceEntity> GetInvoices();
         void UploadInvoice(JObject data);
+        List<InvoiceEntity> GetInvoicesByStatus(char status);
+        List<InvoiceEntity> GetInvoicesByCurrencyCode(string cCode);
     }
 }
