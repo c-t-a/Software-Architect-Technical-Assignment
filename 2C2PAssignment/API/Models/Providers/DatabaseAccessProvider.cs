@@ -40,7 +40,7 @@ namespace API.Models.Providers
                         throw new AppException(new ResponseData
                         {
                             Code = "Database is already exit",
-                            Message = "Database is already existed. Please delted that database to test this."
+                            Message = "Database is already existed. Please delete that database to test this."
                         });
                     }
                 }

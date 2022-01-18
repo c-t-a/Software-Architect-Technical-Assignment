@@ -40,7 +40,7 @@ namespace API.Controllers
         {
             try
             {
-                await invoiceAccessProvider.UploadInvoice(data);
+                invoiceAccessProvider.UploadInvoice(data);
                 return Ok();
             }
             catch (Exception e) { 

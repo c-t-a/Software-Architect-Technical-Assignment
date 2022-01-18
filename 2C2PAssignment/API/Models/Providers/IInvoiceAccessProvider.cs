@@ -8,6 +8,6 @@ namespace API.Models.Providers
     public interface IInvoiceAccessProvider
     {
         List<InvoiceEntity> GetInvoices();
-        Task UploadInvoice(JObject data);
+        void UploadInvoice(JObject data);
     }
 }

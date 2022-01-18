@@ -23,7 +23,7 @@ namespace API.Models.Providers
             return invoices;
         }
 
-        public async Task UploadInvoice(JObject data)
+        public void UploadInvoice(JObject data)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace API.Models.Providers
                 appDBContext.DbContext.Invoices.AddRange(invoices);
                 appDBContext.DbContext.SaveChanges();
 
-                appDBContext.DbContext.Database.CommitTransaction();
+                //appDBContext.DbContext.Database.CommitTransaction();
             }
             catch (Exception e) {
                 appDBContext.DbContext.Database.RollbackTransaction();
